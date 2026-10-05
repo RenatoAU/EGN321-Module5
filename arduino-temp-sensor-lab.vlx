@@ -1,0 +1,108 @@
+{
+  "format": "velxio-project",
+  "version": 1,
+  "exportedAt": "2026-09-29T19:34:14.116Z",
+  "name": "arduino-temp-sensor-lab",
+  "boards": [
+    {
+      "id": "arduino-uno",
+      "boardKind": "arduino-uno",
+      "x": 60,
+      "y": 60,
+      "activeFileGroupId": "group-arduino-uno",
+      "languageMode": "arduino",
+      "serialBaudRate": 9600
+    }
+  ],
+  "fileGroups": {
+    "group-arduino-uno": [
+      {
+        "name": "sketch.ino",
+        "content": "// First Readings: Virtual Sensor Reliability Lab\n// Reads an NTC temperature sensor on A0 and classifies each reading.\n\n#include <math.h>\n\nconst int SENSOR_PIN = A0;\nconst float BETA = 3950.0;\n\nint sampleCounter = 1;\n\nvoid setup() {\n  Serial.begin(9600);\n  Serial.println(\"sample_number,raw_adc,temperature_c,status\");\n}\n\nvoid loop() {\n  // The assignment permits a simulated failure when the platform does not\n  // naturally provide missing data. Sample 85 represents that condition.\n  if (sampleCounter == 85) {\n    Serial.print(sampleCounter);\n    Serial.println(\",,,MISSING\");\n\n    sampleCounter++;\n    delay(1000);\n    return;\n  }\n\n  int rawValue = analogRead(SENSOR_PIN);\n\n  // Values at the ADC endpoints cannot be safely converted by the NTC formula.\n  if (rawValue <= 0 || rawValue >= 1023) {\n    Serial.print(sampleCounter);\n    Serial.print(\",\");\n    Serial.print(rawValue);\n    Serial.println(\",,SENSOR_ERROR\");\n\n    sampleCounter++;\n    delay(1000);\n    return;\n  }\n\n  // Convert the 10K NTC reading to degrees Celsius using Beta = 3950.\n  float temperatureC =\n      1.0 /\n      (log(1.0 / (1023.0 / rawValue - 1.0)) / BETA\n      + 1.0 / 298.15)\n      - 273.15;\n\n  String status;\n  if (temperatureC >= 0.0 && temperatureC <= 50.0) {\n    status = \"OK\";\n  } else {\n    status = \"OUT_OF_RANGE\";\n  }\n\n  Serial.print(sampleCounter);\n  Serial.print(\",\");\n  Serial.print(rawValue);\n  Serial.print(\",\");\n  Serial.print(temperatureC, 1);\n  Serial.print(\",\");\n  Serial.println(status);\n\n  sampleCounter++;\n  delay(1000);\n}\n"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "ntc_temperature_sensor_1790710258269_unh66xt3w",
+      "metadataId": "ntc-temperature-sensor",
+      "x": 52,
+      "y": 398,
+      "properties": {
+        "temperature": 24
+      }
+    }
+  ],
+  "wires": [
+    {
+      "id": "wire-1790710300117",
+      "start": {
+        "componentId": "arduino-uno",
+        "pinName": "5V",
+        "x": 220,
+        "y": 251.5
+      },
+      "end": {
+        "componentId": "ntc_temperature_sensor_1790710258269_unh66xt3w",
+        "pinName": "VCC",
+        "x": 193,
+        "y": 439.8
+      },
+      "waypoints": [
+        {
+          "x": 220,
+          "y": 439.8
+        }
+      ],
+      "color": "#cc0000",
+      "autoRouted": true
+    },
+    {
+      "id": "wire-1790710314845",
+      "start": {
+        "componentId": "arduino-uno",
+        "pinName": "GND.3",
+        "x": 239,
+        "y": 251.5
+      },
+      "end": {
+        "componentId": "ntc_temperature_sensor_1790710258269_unh66xt3w",
+        "pinName": "GND",
+        "x": 193,
+        "y": 430.2
+      },
+      "waypoints": [
+        {
+          "x": 193,
+          "y": 251.5
+        }
+      ],
+      "color": "#000000",
+      "autoRouted": true
+    },
+    {
+      "id": "wire-1790710323389",
+      "start": {
+        "componentId": "arduino-uno",
+        "pinName": "A0",
+        "x": 268,
+        "y": 251.5
+      },
+      "end": {
+        "componentId": "ntc_temperature_sensor_1790710258269_unh66xt3w",
+        "pinName": "OUT",
+        "x": 193,
+        "y": 449.5
+      },
+      "waypoints": [
+        {
+          "x": 268,
+          "y": 449.5
+        }
+      ],
+      "color": "#22c55e",
+      "autoRouted": true
+    }
+  ],
+  "activeBoardId": "arduino-uno"
+}
